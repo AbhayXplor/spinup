@@ -217,7 +217,7 @@ const main = async (options = {}) => {
         logger.info(`  ${step++}. Use /models to switch models`);
         logger.info(`  ${step++}. Use /connect to add more providers`);
       } else {
-        logger.info(`  ${step++}. Install OpenCode: npm install -g opencode`);
+        logger.info(`  ${step++}. Install OpenCode: npm install -g opencode-ai`);
         logger.info(`  ${step++}. Run: opencode`);
         logger.info(`  ${step++}. Use /models to switch models`);
       }
