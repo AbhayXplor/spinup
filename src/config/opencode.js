@@ -3,7 +3,7 @@ const path = require('path');
 const { getConfigPaths } = require('../utils/detect');
 
 const generateOpenCodeConfig = async (selections) => {
-  const { mcpServers, selectedProviders, primaryModel } = selections;
+  const { mcpServers, providers: selectedProviders, primaryModel } = selections;
   const paths = getConfigPaths();
 
   // Ensure .config/opencode directory exists
