@@ -5,18 +5,19 @@
  * Overrides os.homedir() so ALL config paths resolve inside ./test-sandbox/
  * Nothing touches your real ~/.claude/, ~/.config/opencode/, or ~/.spinup/
  * 
- * Usage:
+ * Usage (from project root):
  *   node test-sandbox.js                  # full interactive test
  *   node test-sandbox.js --dry-run        # preview only
  *   node test-sandbox.js --agent claude   # skip agent prompt
- *   rm -rf test-sandbox                   # clean up when done
+ *   Remove-Item -Recurse -Force test-sandbox   # clean up (Windows)
  */
 
 const os = require('os');
 const path = require('path');
 const fs = require('fs-extra');
 
-const SANDBOX = path.join(__dirname, 'test-sandbox');
+const PROJECT_ROOT = __dirname;
+const SANDBOX = path.join(PROJECT_ROOT, 'test-sandbox');
 
 // CLEAN SLATE: remove previous test run
 fs.removeSync(SANDBOX);
@@ -36,15 +37,8 @@ console.log('  ║   SANDBOX MODE — nothing leaves this    ║');
 console.log('  ║   folder. Safe to test everything.       ║');
 console.log('  ╚══════════════════════════════════════════╝\x1b[0m');
 console.log('');
-console.log(`  Sandbox: ${SANDBOX}`);
-console.log(`  Real home: ${realHomedir()}`);
-console.log('');
-
-// Show what WILL be created
-console.log('  Config paths (all inside sandbox):');
-console.log(`    Claude:    ${path.join(SANDBOX, '.claude', 'settings.json')}`);
-console.log(`    OpenCode:  ${path.join(SANDBOX, '.config', 'opencode', 'opencode.json')}`);
-console.log(`    API keys:  ${path.join(SANDBOX, '.spinup', '.env')}`);
+console.log('  All configs write to test-sandbox/ inside this project.');
+console.log('  Your real ~/.claude/ and ~/.config/opencode/ are NOT touched.');
 console.log('');
 
 // Parse args
@@ -60,18 +54,20 @@ require('./src/index.js')({
   dryRun,
   agent,
 }).then(() => {
-  console.log('\n\x1b[1m--- SANDBOX CONTENTS ---\x1b[0m');
+  console.log('');
+  console.log('\x1b[1m--- WHAT WAS GENERATED ---\x1b[0m');
+  console.log('');
   try {
     const files = [];
     const walk = (dir, prefix = '') => {
       for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
         const full = path.join(dir, entry.name);
-        const rel = prefix ? `${prefix}/${entry.name}` : entry.name;
+        const rel = prefix ? `${prefix}\\${entry.name}` : entry.name;
         if (entry.isDirectory()) {
           walk(full, rel);
         } else {
           const stat = fs.statSync(full);
-          files.push(`  ${rel} (${stat.size} bytes)`);
+          files.push({ rel, full, size: stat.size });
         }
       }
     };
@@ -79,12 +75,21 @@ require('./src/index.js')({
     if (files.length === 0) {
       console.log('  (empty — dry run or no configs generated)');
     } else {
-      files.forEach(f => console.log(f));
+      for (const f of files) {
+        console.log(`  test-sandbox\\${f.rel}  (${f.size} bytes)`);
+      }
+      console.log('');
+      console.log('  View contents:');
+      for (const f of files) {
+        console.log(`    type test-sandbox\\${f.rel}`);
+      }
     }
   } catch (e) {
     console.log('  (could not list sandbox contents)');
   }
-  console.log(`\n  Clean up: rm -rf ${SANDBOX}\n`);
+  console.log('');
+  console.log('  Clean up:  Remove-Item -Recurse -Force test-sandbox');
+  console.log('');
 }).catch(e => {
   console.error('Error:', e.message);
   process.exit(1);
