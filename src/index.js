@@ -190,16 +190,39 @@ const main = async (options = {}) => {
     logger.blank();
     logger.success('Spinup setup complete!');
     logger.blank();
+
+    // Check if agents are installed for accurate next steps
+    const { checkAgentInstalled } = require('./utils/detect');
+    const claudeInstalled = (selections.agent === 'claude' || selections.agent === 'both')
+      ? await checkAgentInstalled('claude') : false;
+    const opencodeInstalled = (selections.agent === 'opencode' || selections.agent === 'both')
+      ? await checkAgentInstalled('opencode') : false;
+
     logger.info('Next steps:');
+    let step = 1;
+
     if (selections.agent === 'claude' || selections.agent === 'both') {
-      logger.info('  1. Restart Claude Code to load new config');
-      logger.info('  2. Run: claude');
+      if (claudeInstalled) {
+        logger.info(`  ${step++}. Restart Claude Code to load new config`);
+        logger.info(`  ${step++}. Run: claude`);
+      } else {
+        logger.info(`  ${step++}. Install Claude Code: npm install -g @anthropic-ai/claude-code`);
+        logger.info(`  ${step++}. Run: claude`);
+      }
     }
+
     if (selections.agent === 'opencode' || selections.agent === 'both') {
-      logger.info('  1. Run: opencode');
-      logger.info('  2. Use /models to switch models');
-      logger.info('  3. Use /connect to add more providers');
+      if (opencodeInstalled) {
+        logger.info(`  ${step++}. Run: opencode`);
+        logger.info(`  ${step++}. Use /models to switch models`);
+        logger.info(`  ${step++}. Use /connect to add more providers`);
+      } else {
+        logger.info(`  ${step++}. Install OpenCode: npm install -g opencode`);
+        logger.info(`  ${step++}. Run: opencode`);
+        logger.info(`  ${step++}. Use /models to switch models`);
+      }
     }
+
     logger.blank();
 
   } catch (error) {
