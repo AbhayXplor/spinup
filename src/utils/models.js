@@ -27,7 +27,7 @@ const fetchJSON = (url, options = {}) => {
   });
 };
 
-// Provider ID mapping: spinup provider ID -> Models.dev provider ID
+// Provider ID mapping: spinup provider ID -> Models.dev provider key
 const PROVIDER_MAP = {
   openrouter: 'openrouter',
   anthropic: 'anthropic',
@@ -36,7 +36,7 @@ const PROVIDER_MAP = {
   groq: 'groq',
   nvidia: 'nvidia',
   deepseek: 'deepseek',
-  together: 'together',
+  together: 'togetherai',
 };
 
 // Fetch model metadata from Models.dev (open-source database by OpenCode team)
@@ -46,20 +46,20 @@ const fetchModelsFromDev = async () => {
 };
 
 // Parse Models.dev response into spinup model format
+// API structure: { "openai": { id, name, npm, models: { "gpt-5.5": {...} } } }
 const parseModelsDev = (devData, providerId) => {
   const results = [];
+  const targetProvider = PROVIDER_MAP[providerId] || providerId;
 
-  // Models.dev API returns an object keyed by model ID
-  // Each value has: name, cost, limit, reasoning, tool_call, etc.
-  for (const [modelId, model] of Object.entries(devData)) {
-    // Check if this model belongs to the requested provider
-    const modelProvider = modelId.split('/')[0];
-    const targetProvider = PROVIDER_MAP[providerId] || providerId;
+  const provider = devData[targetProvider];
+  if (!provider || !provider.models) return results;
 
-    if (modelProvider !== targetProvider) continue;
+  for (const [modelId, model] of Object.entries(provider.models)) {
+    // Some providers (like nvidia) include the provider prefix in model IDs
+    const fullId = modelId.includes('/') ? modelId : `${targetProvider}/${modelId}`;
 
     results.push({
-      id: modelId,
+      id: fullId,
       name: model.name || modelId,
       provider: providerId,
       contextLength: model.limit?.context || 0,
@@ -102,13 +102,8 @@ const fetchOpenRouterModels = async (apiKey) => {
   }));
 };
 
-// Primary fetch: use Models.dev for most providers, live API for OpenRouter
+// Primary fetch: use Models.dev for all providers
 const fetchModels = async (provider, apiKey) => {
-  // OpenRouter needs live API for :free model detection
-  if (provider === 'openrouter') {
-    return fetchOpenRouterModels(apiKey);
-  }
-
   // Local providers: return empty (user configures manually)
   if (provider === 'ollama' || provider === 'lmstudio') {
     return [];
@@ -119,7 +114,7 @@ const fetchModels = async (provider, apiKey) => {
     return [];
   }
 
-  // All other providers: use Models.dev
+  // All providers: use Models.dev (single source of truth)
   try {
     const devData = await fetchModelsFromDev();
     return parseModelsDev(devData, provider);

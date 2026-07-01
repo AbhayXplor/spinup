@@ -143,8 +143,8 @@ Below is a preview of what the CLI looks like when you run `npx spinup`:
 
  [4] Select models from OpenRouter
 
-   > openai/gpt-5.5                        $3.00/$18.00   1M ctx
-      anthropic/claude-opus-4.8              $4.29/$21.46   1M ctx
+   > openai/gpt-5.5                        $5.00/$30.00   1M ctx
+      anthropic/claude-opus-4.8              $5.00/$25.00   1M ctx
       google/gemini-3.5-flash               $1.50/$9.00    1M ctx
       meta-llama/llama-4-maverick           $0.20/$0.80    1M ctx
       nvidia/nemotron-3-super               FREE            1M ctx
