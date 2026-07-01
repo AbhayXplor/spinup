@@ -1,0 +1,253 @@
+{
+  "servers": {
+    "essential": [
+      {
+        "id": "context7",
+        "name": "Context7",
+        "description": "Up-to-date library docs for any library - latest versions, real examples",
+        "package": "@upstash/context7-mcp",
+        "command": "npx",
+        "args": ["-y", "@upstash/context7-mcp"],
+        "stars": 52568,
+        "requiresApiKey": false,
+        "category": "essential",
+        "claude": {
+          "command": "npx",
+          "args": ["-y", "@upstash/context7-mcp"]
+        },
+        "opencode": {
+          "type": "stdio",
+          "command": "npx",
+          "args": ["-y", "@upstash/context7-mcp"]
+        }
+      },
+      {
+        "id": "sequential-thinking",
+        "name": "Sequential Thinking",
+        "description": "Step-by-step reasoning for complex problems",
+        "package": "@modelcontextprotocol/server-sequential-thinking",
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
+        "stars": 87700,
+        "requiresApiKey": false,
+        "category": "essential",
+        "claude": {
+          "command": "npx",
+          "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+        },
+        "opencode": {
+          "type": "stdio",
+          "command": "npx",
+          "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+        }
+      },
+      {
+        "id": "memory",
+        "name": "Memory",
+        "description": "Persistent knowledge graph across sessions",
+        "package": "@modelcontextprotocol/server-memory",
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-memory"],
+        "stars": 87700,
+        "requiresApiKey": false,
+        "category": "essential",
+        "claude": {
+          "command": "npx",
+          "args": ["-y", "@modelcontextprotocol/server-memory"]
+        },
+        "opencode": {
+          "type": "stdio",
+          "command": "npx",
+          "args": ["-y", "@modelcontextprotocol/server-memory"]
+        }
+      },
+      {
+        "id": "filesystem",
+        "name": "Filesystem",
+        "description": "Read/write/edit files with configurable access controls",
+        "package": "@modelcontextprotocol/server-filesystem",
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-filesystem", "."],
+        "stars": 87700,
+        "requiresApiKey": false,
+        "category": "essential",
+        "claude": {
+          "command": "npx",
+          "args": ["-y", "@modelcontextprotocol/server-filesystem", "."]
+        },
+        "opencode": {
+          "type": "stdio",
+          "command": "npx",
+          "args": ["-y", "@modelcontextprotocol/server-filesystem", "."]
+        }
+      },
+      {
+        "id": "fetch",
+        "name": "Fetch",
+        "description": "Fetch web pages and convert to markdown",
+        "package": "@modelcontextprotocol/server-fetch",
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-fetch"],
+        "stars": 87700,
+        "requiresApiKey": false,
+        "category": "essential",
+        "claude": {
+          "command": "npx",
+          "args": ["-y", "@modelcontextprotocol/server-fetch"]
+        },
+        "opencode": {
+          "type": "stdio",
+          "command": "npx",
+          "args": ["-y", "@modelcontextprotocol/server-fetch"]
+        }
+      }
+    ],
+    "browser": [
+      {
+        "id": "playwright",
+        "name": "Playwright",
+        "description": "Browser automation, screenshots, and testing",
+        "package": "@playwright/mcp",
+        "command": "npx",
+        "args": ["-y", "@playwright/mcp"],
+        "stars": 34000,
+        "requiresApiKey": false,
+        "category": "browser",
+        "claude": {
+          "command": "npx",
+          "args": ["-y", "@playwright/mcp"]
+        },
+        "opencode": {
+          "type": "stdio",
+          "command": "npx",
+          "args": ["-y", "@playwright/mcp"]
+        }
+      }
+    ],
+    "development": [
+      {
+        "id": "git",
+        "name": "Git",
+        "description": "Git operations - commit, diff, log, branch",
+        "package": "mcp-server-git",
+        "command": "uvx",
+        "args": ["mcp-server-git"],
+        "requiresPython": true,
+        "stars": 87700,
+        "requiresApiKey": false,
+        "category": "development",
+        "claude": {
+          "command": "uvx",
+          "args": ["mcp-server-git"]
+        },
+        "opencode": {
+          "type": "stdio",
+          "command": "uvx",
+          "args": ["mcp-server-git"]
+        }
+      },
+      {
+        "id": "sqlite",
+        "name": "SQLite",
+        "description": "Local SQL database operations",
+        "package": "@modelcontextprotocol/server-sqlite",
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-sqlite", "--db-path", "./data.db"],
+        "stars": 87700,
+        "requiresApiKey": false,
+        "category": "development",
+        "claude": {
+          "command": "npx",
+          "args": ["-y", "@modelcontextprotocol/server-sqlite", "--db-path", "./data.db"]
+        },
+        "opencode": {
+          "type": "stdio",
+          "command": "npx",
+          "args": ["-y", "@modelcontextprotocol/server-sqlite", "--db-path", "./data.db"]
+        }
+      }
+    ],
+    "information": [
+      {
+        "id": "time",
+        "name": "Time",
+        "description": "Timezone conversion and date operations",
+        "package": "@modelcontextprotocol/server-time",
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-time"],
+        "stars": 87700,
+        "requiresApiKey": false,
+        "category": "information",
+        "claude": {
+          "command": "npx",
+          "args": ["-y", "@modelcontextprotocol/server-time"]
+        },
+        "opencode": {
+          "type": "stdio",
+          "command": "npx",
+          "args": ["-y", "@modelcontextprotocol/server-time"]
+        }
+      },
+      {
+        "id": "weather",
+        "name": "Weather",
+        "description": "Weather forecasts using Open-Meteo (free, no API key)",
+        "package": "@h1deya/mcp-server-weather",
+        "command": "npx",
+        "args": ["-y", "@h1deya/mcp-server-weather"],
+        "stars": 500,
+        "requiresApiKey": false,
+        "category": "information",
+        "claude": {
+          "command": "npx",
+          "args": ["-y", "@h1deya/mcp-server-weather"]
+        },
+        "opencode": {
+          "type": "stdio",
+          "command": "npx",
+          "args": ["-y", "@h1deya/mcp-server-weather"]
+        }
+      }
+    ],
+    "local": [
+      {
+        "id": "apple-mcp",
+        "name": "Apple MCP",
+        "description": "macOS Notes, Calendar, Contacts integration",
+        "package": "apple-mcp",
+        "command": "npx",
+        "args": ["-y", "apple-mcp"],
+        "stars": 5000,
+        "requiresApiKey": false,
+        "macOSOnly": true,
+        "category": "local",
+        "claude": {
+          "command": "npx",
+          "args": ["-y", "apple-mcp"]
+        },
+        "opencode": {
+          "type": "stdio",
+          "command": "npx",
+          "args": ["-y", "apple-mcp"]
+        }
+      }
+    ]
+  },
+  "presets": {
+    "minimal": {
+      "name": "Minimal",
+      "description": "Just the essentials for quick start",
+      "servers": ["context7", "sequential-thinking"]
+    },
+    "recommended": {
+      "name": "Recommended",
+      "description": "Best balance of features and simplicity",
+      "servers": ["context7", "sequential-thinking", "memory", "filesystem", "fetch"]
+    },
+    "full": {
+      "name": "Full Stack",
+      "description": "Everything you need for serious development",
+      "servers": ["context7", "sequential-thinking", "memory", "filesystem", "fetch", "playwright", "git", "sqlite", "time"]
+    }
+  }
+}
