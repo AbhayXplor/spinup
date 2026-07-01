@@ -1,6 +1,8 @@
 const https = require('https');
 const http = require('http');
 
+const MODELS_DEV_API = 'https://models.dev/api.json';
+
 const fetchJSON = (url, options = {}) => {
   return new Promise((resolve, reject) => {
     const mod = url.startsWith('https') ? https : http;
@@ -21,10 +23,62 @@ const fetchJSON = (url, options = {}) => {
       });
     });
     req.on('error', reject);
-    req.setTimeout(10000, () => { req.destroy(); reject(new Error('Request timed out')); });
+    req.setTimeout(15000, () => { req.destroy(); reject(new Error('Request timed out')); });
   });
 };
 
+// Provider ID mapping: spinup provider ID -> Models.dev provider ID
+const PROVIDER_MAP = {
+  openrouter: 'openrouter',
+  anthropic: 'anthropic',
+  openai: 'openai',
+  google: 'google',
+  groq: 'groq',
+  nvidia: 'nvidia',
+  deepseek: 'deepseek',
+  together: 'together',
+};
+
+// Fetch model metadata from Models.dev (open-source database by OpenCode team)
+const fetchModelsFromDev = async () => {
+  const data = await fetchJSON(MODELS_DEV_API);
+  return data;
+};
+
+// Parse Models.dev response into spinup model format
+const parseModelsDev = (devData, providerId) => {
+  const results = [];
+
+  // Models.dev API returns an object keyed by model ID
+  // Each value has: name, cost, limit, reasoning, tool_call, etc.
+  for (const [modelId, model] of Object.entries(devData)) {
+    // Check if this model belongs to the requested provider
+    const modelProvider = modelId.split('/')[0];
+    const targetProvider = PROVIDER_MAP[providerId] || providerId;
+
+    if (modelProvider !== targetProvider) continue;
+
+    results.push({
+      id: modelId,
+      name: model.name || modelId,
+      provider: providerId,
+      contextLength: model.limit?.context || 0,
+      inputPrice: model.cost?.input ?? null,
+      outputPrice: model.cost?.output ?? null,
+      isFree: (model.cost?.input === 0 && model.cost?.output === 0),
+      capabilities: {
+        vision: model.attachment || false,
+        tools: model.tool_call || false,
+        reasoning: model.reasoning || false,
+        structuredOutput: model.structured_output || false,
+      },
+    });
+  }
+
+  return results;
+};
+
+// OpenRouter: use live API for free model detection (:free suffix)
 const fetchOpenRouterModels = async (apiKey) => {
   const url = 'https://openrouter.ai/api/v1/models';
   const headers = apiKey ? { 'Authorization': `Bearer ${apiKey}` } : {};
@@ -35,7 +89,7 @@ const fetchOpenRouterModels = async (apiKey) => {
   return data.data.map(m => ({
     id: m.id,
     name: m.name || m.id,
-    provider: m.id.split('/')[0],
+    provider: 'openrouter',
     contextLength: m.context_length || 0,
     inputPrice: m.pricing?.prompt ? parseFloat(m.pricing.prompt) * 1000000 : null,
     outputPrice: m.pricing?.completion ? parseFloat(m.pricing.completion) * 1000000 : null,
@@ -48,120 +102,31 @@ const fetchOpenRouterModels = async (apiKey) => {
   }));
 };
 
-const fetchOpenAIModels = async (apiKey) => {
-  const url = 'https://api.openai.com/v1/models';
-  const headers = { 'Authorization': `Bearer ${apiKey}` };
-  const data = await fetchJSON(url, { headers });
-
-  if (!data.data) return [];
-
-  return data.data
-    .filter(m => m.id.startsWith('gpt') || m.id.startsWith('o1') || m.id.startsWith('o3') || m.id.startsWith('o4'))
-    .map(m => ({
-      id: m.id,
-      name: m.id,
-      provider: 'openai',
-      contextLength: 128000,
-      inputPrice: null,
-      outputPrice: null,
-      isFree: false,
-      capabilities: { vision: true, tools: true, reasoning: m.id.startsWith('o') },
-    }));
-};
-
-const fetchAnthropicModels = async (apiKey) => {
-  const url = 'https://api.anthropic.com/v1/models';
-  const headers = {
-    'x-api-key': apiKey,
-    'anthropic-version': '2023-06-01',
-  };
-  const data = await fetchJSON(url, { headers });
-
-  if (!data.data) return [];
-
-  return data.data.map(m => ({
-    id: m.id,
-    name: m.display_name || m.id,
-    provider: 'anthropic',
-    contextLength: m.context_window || 200000,
-    inputPrice: null,
-    outputPrice: null,
-    isFree: false,
-    capabilities: {
-      vision: m.id.includes('claude') && !m.id.includes('haiku'),
-      tools: true,
-      reasoning: m.id.includes('opus') || m.id.includes('sonnet'),
-    },
-  }));
-};
-
-const fetchGroqModels = async (apiKey) => {
-  const url = 'https://api.groq.com/openai/v1/models';
-  const headers = { 'Authorization': `Bearer ${apiKey}` };
-  const data = await fetchJSON(url, { headers });
-
-  if (!data.data) return [];
-
-  return data.data.map(m => ({
-    id: m.id,
-    name: m.id,
-    provider: 'groq',
-    contextLength: m.context_window || 32000,
-    inputPrice: null,
-    outputPrice: null,
-    isFree: true,
-    capabilities: { vision: false, tools: true, reasoning: false },
-  }));
-};
-
-const fetchTogetherModels = async (apiKey) => {
-  const url = 'https://api.together.xyz/v1/models';
-  const headers = { 'Authorization': `Bearer ${apiKey}` };
-  const data = await fetchJSON(url, { headers });
-
-  if (!data.data) return [];
-
-  return data.data.map(m => ({
-    id: m.id,
-    name: m.display_name || m.id,
-    provider: 'together',
-    contextLength: m.context_length || 0,
-    inputPrice: m.pricing?.input || null,
-    outputPrice: m.pricing?.output || null,
-    isFree: false,
-    capabilities: { vision: false, tools: true, reasoning: false },
-  }));
-};
-
-const fetchNvidiaModels = async (apiKey) => {
-  const url = 'https://integrate.api.nvidia.com/v1/models';
-  const headers = { 'Authorization': `Bearer ${apiKey}` };
-  const data = await fetchJSON(url, { headers });
-
-  if (!data.data) return [];
-
-  return data.data.map(m => ({
-    id: m.id,
-    name: m.id,
-    provider: 'nvidia',
-    contextLength: 0,
-    inputPrice: null,
-    outputPrice: null,
-    isFree: false,
-    capabilities: { vision: false, tools: false, reasoning: false },
-  }));
-};
-
+// Primary fetch: use Models.dev for most providers, live API for OpenRouter
 const fetchModels = async (provider, apiKey) => {
-  switch (provider) {
-    case 'openrouter': return fetchOpenRouterModels(apiKey);
-    case 'openai': return fetchOpenAIModels(apiKey);
-    case 'anthropic': return fetchAnthropicModels(apiKey);
-    case 'groq': return fetchGroqModels(apiKey);
-    case 'together': return fetchTogetherModels(apiKey);
-    case 'nvidia': return fetchNvidiaModels(apiKey);
-    default: return [];
+  // OpenRouter needs live API for :free model detection
+  if (provider === 'openrouter') {
+    return fetchOpenRouterModels(apiKey);
+  }
+
+  // Local providers: return empty (user configures manually)
+  if (provider === 'ollama' || provider === 'lmstudio') {
+    return [];
+  }
+
+  // Custom provider: return empty
+  if (provider === 'custom') {
+    return [];
+  }
+
+  // All other providers: use Models.dev
+  try {
+    const devData = await fetchModelsFromDev();
+    return parseModelsDev(devData, provider);
+  } catch (e) {
+    // Fallback: return empty if Models.dev is down
+    return [];
   }
 };
 
-module.exports = { fetchModels, fetchOpenRouterModels, fetchOpenAIModels, fetchAnthropicModels, fetchGroqModels, fetchTogetherModels, fetchNvidiaModels };
+module.exports = { fetchModels, fetchOpenRouterModels, fetchModelsFromDev, parseModelsDev };

@@ -236,17 +236,17 @@
   "presets": {
     "minimal": {
       "name": "Minimal",
-      "description": "Just the essentials for quick start",
+      "description": "Just the essentials for quick start (2 servers)",
       "servers": ["context7", "sequential-thinking"]
     },
     "recommended": {
       "name": "Recommended",
-      "description": "Best balance of features and simplicity",
+      "description": "Best balance of features and simplicity (5 servers)",
       "servers": ["context7", "sequential-thinking", "memory", "filesystem", "fetch"]
     },
     "full": {
       "name": "Full Stack",
-      "description": "Everything you need for serious development",
+      "description": "Everything you need for serious development (9 servers)",
       "servers": ["context7", "sequential-thinking", "memory", "filesystem", "fetch", "playwright", "git", "sqlite", "time"]
     }
   }

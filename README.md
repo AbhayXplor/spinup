@@ -51,7 +51,7 @@ npx spinup
 
 **What gets configured:**
 
-- Model providers with live API discovery (11 providers, 300+ models)
+- Model providers with verified data from Models.dev (11 providers, 300+ models)
 - MCP servers with zero API keys (11 servers, 3 presets)
 - Skill repositories from top open-source collections (5 repos, 400K+ stars)
 - Agent-specific config files (Claude Code and/or OpenCode)
@@ -85,7 +85,7 @@ pnpm dlx spinup                     # pnpm
 | 1 | Detect installed agents and Ollama | Lists what is installed |
 | 2 | Select agent (Claude Code, OpenCode, or both) | Interactive prompt |
 | 3 | Select model providers | 11 options with live API |
-| 4 | Pick models from live provider data | Model list with pricing |
+| 4 | Pick models from verified data | Models.dev + live pricing |
 | 5 | Choose MCP server preset | minimal / recommended / full |
 | 6 | Select skill repositories | 5 curated repos |
 | 7 | Generate config files | Done |
@@ -143,11 +143,11 @@ Below is a preview of what the CLI looks like when you run `npx spinup`:
 
  [4] Select models from OpenRouter
 
-   > openai/gpt-5.5                        $5.00/$15.00  1M ctx
-     anthropic/claude-opus-4.8              $15.00/$75.00 200K ctx
-     google/gemini-3.5-flash               $0.15/$0.60   1M ctx
-     meta-llama/llama-4-maverick           $0.20/$0.80   1M ctx
-     nvidia/nemotron-3-super               FREE           1M ctx
+   > openai/gpt-5.5                        $3.00/$18.00   1M ctx
+      anthropic/claude-opus-4.8              $4.29/$21.46   1M ctx
+      google/gemini-3.5-flash               $1.50/$9.00    1M ctx
+      meta-llama/llama-4-maverick           $0.20/$0.80    1M ctx
+      nvidia/nemotron-3-super               FREE            1M ctx
 
  [5] Configure MCP servers
    > minimal     (2 servers - Context7, Sequential Thinking)
@@ -178,20 +178,34 @@ Below is a preview of what the CLI looks like when you run `npx spinup`:
 
 ### How It Works
 
-spinup calls each provider's `/v1/models` API endpoint in real-time. You always see the **latest available models**, not a stale static list.
+spinup uses [Models.dev](https://models.dev) — the same open-source model database that powers OpenCode — for verified model IDs, pricing, and capabilities. You always see **accurate, up-to-date information**, not stale hardcoded lists.
+
+For OpenRouter, spinup also calls the live `/v1/models` API to detect `:free` models in real-time.
+
+### Data Source: Models.dev
+
+[Models.dev](https://models.dev) is an open-source database of AI model specifications maintained by the [OpenCode team](https://github.com/anomalyco/models.dev). It provides:
+
+- Verified model IDs (same identifiers used by AI SDK and OpenCode)
+- Accurate pricing (input/output cost per million tokens)
+- Context window sizes
+- Capability flags (reasoning, tool calling, vision, structured output)
+- Release dates and update timestamps
+
+spinup uses this as the single source of truth instead of maintaining hardcoded model lists that go stale.
 
 ### Provider Matrix
 
 | Provider | Free Models | API Key Required | Endpoint | Latest Models (June 2026) |
 |----------|:-----------:|:----------------:|----------|---------------------------|
-| OpenRouter | 33 | Optional | `/v1/models` | GPT-5.5, Claude Opus 4.8, Gemini 3.5 Flash, Llama 4 |
-| Anthropic | -- | Yes | `/v1/models` | Claude Opus 4.8, Sonnet 4.6, Haiku 4.5, Fable 5 |
-| OpenAI | -- | Yes | `/v1/models` | GPT-5.5, GPT-5.5 Instant, o3, o4-mini |
-| Google Gemini | Free tier | Yes | Auto | Gemini 3.5 Flash, 3.1 Pro, 3.1 Deep Think |
-| Groq | All free | Yes | `/v1/models` | Llama 4 Scout/Maverick, Qwen3 32B |
-| NVIDIA NIM | Free tier | Yes | `/v1/models` | Nemotron 3 Ultra, Nemotron 3 Super |
-| DeepSeek | -- | Yes | `/models` | DeepSeek V3, DeepSeek R1 |
-| Together AI | -- | Yes | `/v1/models` | Llama 4, Mistral Small 4, Qwen3.7 |
+| OpenRouter | 33+ | Optional | `/v1/models` | GPT-5.5, Claude Opus 4.8, Gemini 3.5, Kimi K2.7 |
+| Anthropic | -- | Yes | Models.dev | Claude Opus 4.8, Sonnet 4.6, Fable 5, Sonnet 5 |
+| OpenAI | -- | Yes | Models.dev | GPT-5.5, GPT-5.4, o3, o4-mini |
+| Google Gemini | Free tier | Yes | Models.dev | Gemini 3.5 Flash, 3.1 Pro, Gemma 4 |
+| Groq | All free | Yes | Models.dev | Llama 4 Scout/Maverick, Qwen3 |
+| NVIDIA NIM | Free tier | Yes | Models.dev | Nemotron 3 Ultra, Nemotron 3 Super |
+| DeepSeek | -- | Yes | Models.dev | DeepSeek V4 Flash, V4 Pro, V3 |
+| Together AI | -- | Yes | Models.dev | Llama 4, Mistral, Qwen3.7 |
 | Ollama | All free | No | Local | Llama 4 Scout, Gemma 4, Mistral Small 4 |
 | LM Studio | All free | No | Local | Any GGUF model |
 | Custom | -- | Varies | User-provided | Any OpenAI-compatible endpoint |
@@ -206,21 +220,23 @@ spinup calls each provider's `/v1/models` API endpoint in real-time. You always 
   LM Studio      Gemini            Together AI             OpenAI
                  NVIDIA NIM                              DeepSeek
   Local          Free API           Limited free           Per-token
+
+  Verified pricing from Models.dev (open-source, same database as OpenCode)
 ```
 
 ### OpenRouter Free Models
 
-OpenRouter offers 33 free models tagged with a `:free` suffix. Current top free models:
+OpenRouter offers free models tagged with a `:free` suffix. Current top free models (from live API):
 
 | Model | Context | Capabilities |
 |-------|:-------:|:------------:|
 | `openrouter/owl-alpha` | 1M | Tools, Agentic |
 | `nvidia/nemotron-3-super:free` | 1M | Tools, Reasoning |
-| `poolside/laguna-m.1:free` | 128K | Coding, Tools |
-| `moonshotai/kimi-k2:free` | 128K | Tools |
+| `moonshotai/kimi-k2.7-code:free` | 256K | Coding, Tools |
 | `qwen/qwen3-coder:free` | 128K | Coding, Tools |
 | `mistralai/devstral-2512:free` | 128K | Coding |
-| `google/gemma-3-27b-it:free` | 128K | Vision, Tools |
+| `google/gemma-4-31b-it:free` | 256K | Vision, Tools |
+| `deepseek/deepseek-v4-flash:free` | 1M | Tools, Reasoning |
 
 > Models rotate frequently. spinup fetches the live list from the API at runtime.
 
@@ -326,7 +342,7 @@ spinup clones skills from these open-source repos:
 | LSP support | Yes | Yes |
 | Cost tracking | Yes | Yes |
 | Model switching | `/model` | `/models` |
-| Latest model | Claude Opus 4.8 | GPT-5.5, Gemini 3.5 |
+| Latest model | Claude Opus 4.8 | GPT-5.5, Gemini 3.5 Flash |
 
 ### Claude Code
 
@@ -428,7 +444,7 @@ Keys are stored locally and only sent to the respective provider APIs.
 |------|--------|--------|
 | Agent setup | Install manually | Auto-detected |
 | Provider config | Edit JSON by hand | Interactive selection |
-| Model discovery | Browse provider docs | Live API fetch |
+| Model discovery | Browse provider docs | Models.dev verified data + live API |
 | MCP servers | Add one at a time | Presets (2/5/9 servers) |
 | Skills | Git clone each repo | One-click selection |
 | API keys | Write `.env` manually | Automated |
@@ -550,8 +566,8 @@ npm run test         # dry run (no changes written)
 ### Adding a Provider
 
 1. Add config to `src/prompts/models.js`
-2. Add model fetcher to `src/utils/models.js`
-3. Register in the `fetchModels` switch
+2. If the provider is on Models.dev, add the mapping in `src/utils/models.js` PROVIDER_MAP
+3. If not on Models.dev, add a custom fetcher in `src/utils/models.js`
 
 ### Adding an MCP Server
 

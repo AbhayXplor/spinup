@@ -16,7 +16,7 @@ const PROVIDERS = [
   {
     id: 'anthropic',
     name: 'Anthropic',
-    description: 'Claude Opus 4.8, Sonnet 4.6, Haiku 4.5, Fable 5',
+    description: 'Claude Opus 4.8, Sonnet 4.6, Sonnet 5, Fable 5',
     envVar: 'ANTHROPIC_API_KEY',
     baseUrl: null,
     npm: null,
@@ -26,7 +26,7 @@ const PROVIDERS = [
   {
     id: 'openai',
     name: 'OpenAI',
-    description: 'GPT-5.5, GPT-5.5 Instant, o3, o4-mini',
+    description: 'GPT-5.5, GPT-5.4, o3, o4-mini',
     envVar: 'OPENAI_API_KEY',
     baseUrl: null,
     npm: null,
@@ -36,7 +36,7 @@ const PROVIDERS = [
   {
     id: 'google',
     name: 'Google Gemini',
-    description: 'Gemini 3.5 Flash, 3.1 Pro, 3.1 Deep Think (free tier)',
+    description: 'Gemini 3.5 Flash, 3.1 Pro, Gemma 4 (free tier)',
     envVar: 'GOOGLE_API_KEY',
     baseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai',
     npm: '@ai-sdk/openai-compatible',
@@ -190,11 +190,21 @@ const promptSelectModels = async (provider, models) => {
     return [];
   }
 
-  const choices = models.map(m => ({
-    name: `${m.name} (${m.contextLength ? (m.contextLength / 1000) + 'K' : '?'})${m.isFree ? ' FREE' : ''}${m.inputPrice ? ` $${m.inputPrice}/1M` : ''}`,
-    value: m.id,
-    checked: m.isFree,
-  }));
+  const choices = models.map(m => {
+    const badges = [];
+    if (m.isFree) badges.push('FREE');
+    if (m.capabilities?.reasoning) badges.push('think');
+    if (m.capabilities?.tools) badges.push('tools');
+    if (m.capabilities?.vision) badges.push('vision');
+    const badgeStr = badges.length ? ` [${badges.join(', ')}]` : '';
+    const ctx = m.contextLength ? (m.contextLength / 1000) + 'K' : '?';
+    const price = m.inputPrice != null ? ` $${m.inputPrice}/M in` : '';
+    return {
+      name: `${m.name} (${ctx})${badgeStr}${price}`,
+      value: m.id,
+      checked: m.isFree,
+    };
+  });
 
   const { models: selected } = await inquirer.prompt([
     {

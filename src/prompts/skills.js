@@ -54,7 +54,7 @@ const promptSkills = async () => {
     },
   ]);
 
-  return repos.map(id => SKILL_REPOS.find(r => r.id === id)).filter(Boolean);
+  return repos;
 };
 
 module.exports = { SKILL_REPOS, promptSkills };
