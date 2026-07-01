@@ -354,7 +354,7 @@ spinup clones skills from these open-source repos:
 ### OpenCode
 
 - Config: `~/.config/opencode/opencode.json`
-- Install: `go install github.com/opencode-ai/opencode@latest`
+- Install: `npm install -g opencode-ai` or `curl -fsSL https://opencode.ai/install | bash`
 - Custom providers: 75+ via `@ai-sdk/openai-compatible`
 - Built-in commands: `/models` (live discovery), `/connect` (add providers)
 
