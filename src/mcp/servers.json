@@ -16,7 +16,7 @@
           "args": ["-y", "@upstash/context7-mcp"]
         },
         "opencode": {
-          "type": "stdio",
+          "type": "local",
           "command": "npx",
           "args": ["-y", "@upstash/context7-mcp"]
         }
@@ -36,7 +36,7 @@
           "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
         },
         "opencode": {
-          "type": "stdio",
+          "type": "local",
           "command": "npx",
           "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
         }
@@ -56,7 +56,7 @@
           "args": ["-y", "@modelcontextprotocol/server-memory"]
         },
         "opencode": {
-          "type": "stdio",
+          "type": "local",
           "command": "npx",
           "args": ["-y", "@modelcontextprotocol/server-memory"]
         }
@@ -76,7 +76,7 @@
           "args": ["-y", "@modelcontextprotocol/server-filesystem", "."]
         },
         "opencode": {
-          "type": "stdio",
+          "type": "local",
           "command": "npx",
           "args": ["-y", "@modelcontextprotocol/server-filesystem", "."]
         }
@@ -96,7 +96,7 @@
           "args": ["-y", "@modelcontextprotocol/server-fetch"]
         },
         "opencode": {
-          "type": "stdio",
+          "type": "local",
           "command": "npx",
           "args": ["-y", "@modelcontextprotocol/server-fetch"]
         }
@@ -118,7 +118,7 @@
           "args": ["-y", "@playwright/mcp"]
         },
         "opencode": {
-          "type": "stdio",
+          "type": "local",
           "command": "npx",
           "args": ["-y", "@playwright/mcp"]
         }
@@ -141,7 +141,7 @@
           "args": ["mcp-server-git"]
         },
         "opencode": {
-          "type": "stdio",
+          "type": "local",
           "command": "uvx",
           "args": ["mcp-server-git"]
         }
@@ -161,7 +161,7 @@
           "args": ["-y", "@modelcontextprotocol/server-sqlite", "--db-path", "./data.db"]
         },
         "opencode": {
-          "type": "stdio",
+          "type": "local",
           "command": "npx",
           "args": ["-y", "@modelcontextprotocol/server-sqlite", "--db-path", "./data.db"]
         }
@@ -183,7 +183,7 @@
           "args": ["-y", "@modelcontextprotocol/server-time"]
         },
         "opencode": {
-          "type": "stdio",
+          "type": "local",
           "command": "npx",
           "args": ["-y", "@modelcontextprotocol/server-time"]
         }
@@ -203,7 +203,7 @@
           "args": ["-y", "@h1deya/mcp-server-weather"]
         },
         "opencode": {
-          "type": "stdio",
+          "type": "local",
           "command": "npx",
           "args": ["-y", "@h1deya/mcp-server-weather"]
         }
@@ -226,7 +226,7 @@
           "args": ["-y", "apple-mcp"]
         },
         "opencode": {
-          "type": "stdio",
+          "type": "local",
           "command": "npx",
           "args": ["-y", "apple-mcp"]
         }

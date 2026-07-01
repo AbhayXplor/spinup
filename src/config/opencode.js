@@ -9,13 +9,13 @@ const generateOpenCodeConfig = async (selections) => {
   // Ensure .config/opencode directory exists
   await fs.ensureDir(path.dirname(paths.opencode.global));
 
-  // Build MCP servers config
+  // Build MCP servers config (OpenCode format: type "local", command as array)
   const mcpConfig = {};
   for (const server of mcpServers) {
     mcpConfig[server.id] = {
-      type: 'stdio',
-      command: server.opencode.command,
-      args: server.opencode.args,
+      type: 'local',
+      command: [server.opencode.command, ...server.opencode.args],
+      enabled: true,
     };
   }
 
@@ -60,13 +60,13 @@ const generateOpenCodeConfig = async (selections) => {
 const generateOpenCodeProjectConfig = async (selections) => {
   const { mcpServers, primaryModel } = selections;
 
-  // Build MCP servers config
+  // Build MCP servers config (OpenCode format: type "local", command as array)
   const mcpConfig = {};
   for (const server of mcpServers) {
     mcpConfig[server.id] = {
-      type: 'stdio',
-      command: server.opencode.command,
-      args: server.opencode.args,
+      type: 'local',
+      command: [server.opencode.command, ...server.opencode.args],
+      enabled: true,
     };
   }
 
